@@ -2,12 +2,30 @@
 $pdo = new PDO('mysql:host=mysql;dbname=basedetest;host=127.0.0.1', 'root', '', [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
     ]);
+         
+        $country = $_GET['country'];
 
-    $pdoStat = $pdo->prepare("SELECT * FROM city");
+        $pdoStat = $pdo->query("SELECT * FROM city");
 
-    $pdoStat->execute();
+        $pdoStat->execute();
+
+        $pays = $pdoStat->fetchAll();
+
+        $req = $pdo->prepare("SELECT country FROM city WHERE country = :country");
+
+        $req->bindParam(':country', $country);
+        
+        $req->execute();
     
-    $country = $pdoStat->fetchAll();
+        $reqe = $pdo->prepare("SELECT capital FROM city WHERE capital = :capital");
+
+        $reqe->bindParam(':capital', $capital);
+        
+        $reqe->execute();
+ 
+        $ville = $reqe->fetchAll();
+    
+
 
 ?>
 
@@ -20,33 +38,29 @@ $pdo = new PDO('mysql:host=mysql;dbname=basedetest;host=127.0.0.1', 'root', '', 
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="container text-center">
+<body class="container text-center" style="color: #fff;">
 
-    <form method="get" action="index.php" class="bg-success mt-5 p-5 rounded">
-        <select name="country" id="country" >
-            <option selected="selected">Sélectionner un pays</option>
-            <?php foreach ($country as $value): ?>
-            <option <?= $value['country']; ?>><?= $value['country']; ?></option>
-            <?php endforeach; ?>
-        </select>
-        <div class="mt-5">
-            <input class="btn-lg btn-outline-success" type="submit" value="Rechercher !">
-        </div>
-    </form>
+   <div class="w-50 bg-primary mt-5 pt-5 rounded d-flex">
+        <form method="GET" action="index.php" >
+            <select class="custom-select w-75 " name="country">
+                <option>Sélectionner un pays</option>
+                <?php foreach ($pays as $value): ?>
+                <option ><?= $value['country']; ?></option>
+                <?php endforeach; ?>
+            </select>
+            <input class="btn btn-outline-light mt-5 mb-5" type="submit" value="Rechercher !">
+        </form>
 
-    <?php
+        <?php
+        if (isset($country)) {
+            if ($country == $country) {
+                echo "Pays : $country <br> 
+                      Capitale : $capital";
+            }
+        }
 
-    if ($_GET['country'] == 'France'){
-    echo 'La capitale de la France est Paris !';
-    } elseif ($_GET['country'] == 'Argentine'){
-    echo 'La capitale de l\'Argentine est Buenos Aires !';
-    } elseif ($_GET['country'] == 'Japon'){
-    echo 'La capitale du Japon est Tokyo !';
-    } else {
-    echo '';
-    };
-
-?>
+        ?>
+    </div>
 
 </body>
 
